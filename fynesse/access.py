@@ -6,11 +6,68 @@ import oauth2
 import mongodb
 import sqlite"""
 
+import pymysql
+import urllib.request
+
 # This file accesses the data
 
-"""Place commands in this file to access the data electronically. Don't remove any missing values, or deal with outliers. Make sure you have legalities correct, both intellectual property and personal data privacy rights. Beyond the legal side also think about the ethical issues around this data. """
+"""
+Place commands in this file to access the data electronically. Don't remove
+any missing values, or deal with outliers. Make sure you have legalities correct, 
+both intellectual property and personal data privacy rights. Beyond the legal side 
+also think about the ethical issues around this data. 
+
+"""
+
+# RUN ONCE to download dataset
+
+def download_data():
+    for year in range(1995, 2022):
+        for part in range(1, 3):
+            urllib.request.urlretrieve(f'http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-{str(year)}-part{str(part)}.csv', f'drive/MyDrive/dataset/pp-{str(year)}-part{str(part)}.csv')
+            print(f'Downloaded {str(year)} part {str(part)}')
+
+
+
+
+# Insert your database url below
+database_details = {"url": "testdatabase-mariadb.chq2bzrkeprh.eu-west-2.rds.amazonaws.com", 
+                    "port": 3306}
+
+def connect_db():
+    with open("drive/MyDrive/credentials.yaml") as file:
+        credentials = yaml.safe_load(file)
+    return create_connection(user=credentials["username"], 
+                         password=credentials["password"], 
+                         host=database_details["url"],
+                         database="property_prices")
+
+
+def create_connection(user, password, host, database, port=3306):
+    """ Create a database connection to the MariaDB database
+        specified by the host url and database name.
+    :param user: username
+    :param password: password
+    :param host: host url
+    :param database: database
+    :param port: port number
+    :return: Connection object or None
+    """
+    conn = None
+    try:
+        conn = pymysql.connect(user=user,
+                               passwd=password,
+                               host=host,
+                               port=port,
+                               local_infile=1,
+                               db=database
+                               )
+    except Exception as e:
+        print(f"Error connecting to the MariaDB Server: {e}")
+    return conn
+
 
 def data():
-    """Read the data from the web or local file, returning structured format such as a data frame"""
+    """Read the data from the web or local file, 
+    returning structured format such as a data frame"""
     raise NotImplementedError
-

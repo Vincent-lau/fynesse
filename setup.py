@@ -18,21 +18,22 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = "fynesse"
-DESCRIPTION = "Template files for performing fynesse pipeline data analysis with python."
-URL = "https://github.com/lawrennd/fynesse_template"
-EMAIL = "emal@domain.here"
-AUTHOR = "Givenname Familyname"
+DESCRIPTION = "Modified template files for performing fynesse pipeline data \
+    analysis with python."
+URL = "https://github.com/Vincent-lau/fynesse"
+EMAIL = "sl955@cam.ac.uk"
+AUTHOR = "Shuntian Liu"
 REQUIRES_PYTHON = ">=3.6.0"
 VERSION = "0.1.0"
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    "pandas", "numpy", "jupyter", "matplotlib", 
+    "pandas", "numpy", "jupyter", "matplotlib", "urllib", "pymysql"
 ]
 
 # What packages are optional?
 EXTRAS = {
-    "interactive html plots": ["bokeh",],
+    "interactive html plots": ["bokeh", ],
 }
 
 PACKAGE_DATA = {"fynesse": ["defaults.yml"]}
@@ -87,7 +88,8 @@ class UploadCommand(Command):
             pass
 
         self.status("Building Source and Wheel (universal) distribution…")
-        os.system("{0} setup.py sdist bdist_wheel --universal".format(sys.executable))
+        os.system(
+            "{0} setup.py sdist bdist_wheel --universal".format(sys.executable))
 
         self.status("Uploading the package to PyPI via Twine…")
         os.system("twine upload dist/*")
@@ -110,7 +112,8 @@ setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
+    packages=find_packages(
+        exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
     package_data=PACKAGE_DATA,
     # If your package is a single module, use this instead of "packages":
     # py_modules=["mypackage"],
