@@ -18,6 +18,14 @@ Ensure that date formats are correct and correctly timezoned.
 """
 
 
+import matplotlib.pyplot as plt
+import mlai
+import mlai.plot as plot
+import notutils
+import mlai
+import osmnx as ox
+
+
 def data():
     """Load the data from access and ensure missing values are correctly encoded 
     as well as indices correct, column names informative, date and times correctly 
