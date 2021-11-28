@@ -14,5 +14,10 @@ import tensorflow as tf
 # Or if it's a statistical analysis
 import scipy.stats"""
 
+import numpy as np
+import geopandas as gpd
+import math
+import statsmodels.api as sm
+
 """Address a particular question that arises from the data"""
 
