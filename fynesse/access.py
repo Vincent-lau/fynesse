@@ -91,7 +91,7 @@ def upload_pp_data(conn, start_year, end_year):
 
 
 # Insert your database url below
-database_details = {"url": "testdatabase-mariadb.chq2bzrkeprh.eu-west-2.rds.amazonaws.com",
+database_details = {"url": "database-sl955.cgrre17yxw11.eu-west-2.rds.amazonaws.com",
                     "port": 3306}
 
 
