@@ -15,9 +15,9 @@ import pandas as pd
 
 """
 Place commands in this file to access the data electronically. Don't remove
-any missing values, or deal with outliers. Make sure you have legalities correct, 
-both intellectual property and personal data privacy rights. Beyond the legal side 
-also think about the ethical issues around this data. 
+any missing values, or deal with outliers. Make sure you have legalities correct,
+both intellectual property and personal data privacy rights. Beyond the legal side
+also think about the ethical issues around this data.
 
 """
 
@@ -65,10 +65,11 @@ def create_pp_db(conn):
         """.replace("\n", " "))
         cur.execute("""
             CREATE INDEX `pp.date` USING HASH
-            ON `pp_data` 
+            ON `pp_data`
                 (date_of_transfer)
         """.replace("\n", " ").replace("\n", " "))
     conn.commit()
+
 
 def upload_pp_data(conn, start_year, end_year):
     filepath = 'drive/MyDrive/dataset/'
@@ -77,11 +78,11 @@ def upload_pp_data(conn, start_year, end_year):
         for part in range(1, 3):
             filename = filepath + f'pp-{str(year)}-part{str(part)}.csv'
             with conn.cursor() as cur:
-                sql = f"""LOAD DATA LOCAL INFILE '{filename}' INTO TABLE pp_data 
-                            FIELDS 
-                            TERMINATED BY ','  
+                sql = f"""LOAD DATA LOCAL INFILE '{filename}' INTO TABLE pp_data
+                            FIELDS
+                            TERMINATED BY ','
                             ENCLOSED BY '"'
-                            LINES STARTING BY '' TERMINATED BY 
+                            LINES STARTING BY '' TERMINATED BY
                         """
                 ending = "'\n';"
                 cur.execute(sql.replace("\n", " ") + ending)
@@ -127,7 +128,10 @@ def create_connection(user, password, host, database, port=3306):
         print(f"Error connecting to the MariaDB Server: {e}")
 
     # initialise the db
+    return initialise_db(conn)
 
+
+def initialise_db(conn):
     with conn.cursor() as cur:
         cur.execute('SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";')
         cur.execute('SET time_zone = "+00:00";')
@@ -136,6 +140,7 @@ def create_connection(user, password, host, database, port=3306):
         CHARACTER SET utf8 COLLATE utf8_bin;')
         cur.execute('USE `property_prices`;')
 
+    conn.commit()
     return conn
 
 
