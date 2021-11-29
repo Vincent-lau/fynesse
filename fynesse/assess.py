@@ -19,7 +19,6 @@ Ensure that date formats are correct and correctly timezoned.
 
 
 import matplotlib.pyplot as plt
-from matplotlib.collections import LineCollection
 import matplotlib as mpl
 import mlai
 import mlai.plot as plot
