@@ -30,7 +30,7 @@ VERSION = "0.1.0"
 REQUIRED = [
     "pandas", "numpy", "jupyter", "matplotlib", "pymysql", "PyYAML>=6.0",
     "mlai", "notutils", "osmnx", "osmx", "geopandas", "statsmodels", "ipywidgets",
-    "zipfile"
+    
 ]
 
 # What packages are optional?
