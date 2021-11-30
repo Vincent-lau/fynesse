@@ -10,6 +10,7 @@ import pymysql
 import urllib.request
 import datetime
 import pandas as pd
+import zipfile
 
 # This file accesses the data
 
@@ -21,7 +22,19 @@ also think about the ethical issues around this data.
 
 """
 
+
+# Insert your database url below
+database_details = {"url": "database-sl955.cgrre17yxw11.eu-west-2.rds.amazonaws.com",
+                    "port": 3306}
+
+
 # RUN ONCE to download dataset
+
+def download_postcode_data():
+    urllib.request.urlretrieve(f'https://www.getthedata.com/downloads/open_postcode_geo.csv.zip',
+                               f'drive/MyDrive/dataset/open_postcode_geo.csv.zip')
+    with zipfile.ZipFile('drive/MyDrive/dataset/open_postcode_geo.csv.zip', 'r') as zip_ref:
+        zip_ref.extractall('drive/MyDrive/dataset/open_postcode_geo.csv')
 
 
 def download_pp_data():
@@ -91,9 +104,77 @@ def upload_pp_data(conn, start_year, end_year):
     print("dateset committed")
 
 
-# Insert your database url below
-database_details = {"url": "database-sl955.cgrre17yxw11.eu-west-2.rds.amazonaws.com",
-                    "port": 3306}
+def create_postcode_data(conn):
+    with conn.cursor() as cur:
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS `postcode_data` (
+            `postcode` varchar(8) COLLATE utf8_bin NOT NULL,
+            `status` enum('live','terminated') NOT NULL,
+            `usertype` enum('small', 'large') NOT NULL,
+            `easting` int unsigned,
+            `northing` int unsigned,
+            `positional_quality_indicator` int NOT NULL,
+            `country` enum('England', 'Wales', 'Scotland', 'Northern Ireland', 'Channel Islands', 'Isle of Man') NOT NULL,
+            `latitude` decimal(11,8) NOT NULL,
+            `longitude` decimal(10,8) NOT NULL,
+            `postcode_no_space` tinytext COLLATE utf8_bin NOT NULL,
+            `postcode_fixed_width_seven` varchar(7) COLLATE utf8_bin NOT NULL,
+            `postcode_fixed_width_eight` varchar(8) COLLATE utf8_bin NOT NULL,
+            `postcode_area` varchar(2) COLLATE utf8_bin NOT NULL,
+            `postcode_district` varchar(4) COLLATE utf8_bin NOT NULL,
+            `postcode_sector` varchar(6) COLLATE utf8_bin NOT NULL,
+            `outcode` varchar(4) COLLATE utf8_bin NOT NULL,
+            `incode` varchar(3)  COLLATE utf8_bin NOT NULL,
+            `db_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY
+            ) DEFAULT CHARSET=utf8 COLLATE=utf8_bin; 
+        """.replace("\n", " ")
+                    )
+        cur.execute("""
+            CREATE INDEX `po.postcode` USING HASH
+                ON `postcode_data`
+                (postcode); 
+        """.replace("\n", " "))
+
+    conn.commit()
+    print("postcode table created")
+
+
+def upload_postcode_data(conn):
+    filepath = 'drive/MyDrive/dataset/'
+    with conn.cursor() as cur:
+        cur.execute(f"""
+            LOAD DATA LOCAL INFILE '{filepath}open_postcode_geo/open_postcode_geo.csv' INTO TABLE `postcode_data`
+            FIELDS TERMINATED BY ',' 
+            LINES STARTING BY '' TERMINATED BY '\n'; 
+        """
+                    )
+    conn.commit()
+    print("postcode data loaded")
+
+
+def create_prices_coordinate_data(conn):
+    with conn.cursor() as cur:
+        cur.execute("DROP TABLE IF EXISTS `prices_coordinates_data`;")
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS `prices_coordinates_data` (
+            `price` int(10) unsigned NOT NULL,
+            `date_of_transfer` date NOT NULL,
+            `postcode` varchar(8) COLLATE utf8_bin NOT NULL,
+            `property_type` varchar(1) COLLATE utf8_bin NOT NULL,
+            `new_build_flag` varchar(1) COLLATE utf8_bin NOT NULL,
+            `tenure_type` varchar(1) COLLATE utf8_bin NOT NULL,
+            `locality` tinytext COLLATE utf8_bin NOT NULL,
+            `town_city` tinytext COLLATE utf8_bin NOT NULL,
+            `district` tinytext COLLATE utf8_bin NOT NULL,
+            `county` tinytext COLLATE utf8_bin NOT NULL,
+            `country` enum('England', 'Wales', 'Scotland', 'Northern Ireland', 'Channel Islands', 'Isle of Man') NOT NULL,
+            `latitude` decimal(11,8) NOT NULL,
+            `longitude` decimal(10,8) NOT NULL,
+            `db_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY
+            ) DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;
+        """.replace("\n", " "))
+    conn.commit()
+    print("prices coordinate data created")
 
 
 def connect_db():
