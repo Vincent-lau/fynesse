@@ -19,6 +19,7 @@ import geopandas as gpd
 import math
 import statsmodels.api as sm
 import sklearn.model_selection as ms
+import pandas as pd
 from . import access
 from . import assess
 
@@ -98,7 +99,6 @@ def get_house_dist_to_facilities(house_loc, pois):
     house_dist_to_places = {fac_name: get_closet_dist_to_facility(house_loc, pois, fac_name)
                             for fac_name in facility_names}
 
-    print(house_dist_to_places)
     return house_dist_to_places
 
 
