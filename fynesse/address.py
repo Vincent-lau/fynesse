@@ -79,7 +79,7 @@ def get_closet_dist_to_facility(house_loc, pois, fac_name):
 def design_matrix(x, constant):
     design = np.empty((0, x.shape[1]), int)
     for z in x:
-        design = np.append(design, np.array([z, z**2, np.log(z)]), axis=0)
+        design = np.append(design, np.array([z, z**2]), axis=0)
     design = np.concatenate((design, constant))
     return np.column_stack(design)
 
@@ -185,7 +185,7 @@ def train(house_loc_train, pois, property_type, feature_keys, fig, ax):
 
     x0_pred = np.array(np.linspace(np.min(x[0]), np.max(x[0]), 500))
     x1_pred = np.array(np.linspace(np.min(x[1]), np.max(x[1]), 500))
-    x2_pred = np.array(np.linspace(np.min(x[2]), np.max(x[1]), 500))
+    x2_pred = np.array(np.linspace(np.min(x[2]), np.max(x[2]), 500))
     x_pred = np.array([x0_pred, x1_pred, x2_pred])
 
     prop_pred = np.array([property_type for _ in range(500)])
