@@ -21,7 +21,6 @@ import statsmodels.api as sm
 import sklearn.model_selection as ms
 from . import access
 from . import assess
-from access import conn
 
 
 """Address a particular question that arises from the data"""
