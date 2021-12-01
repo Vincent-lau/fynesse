@@ -11,6 +11,7 @@ import urllib.request
 import datetime
 import pandas as pd
 import zipfile
+import osmnx as ox
 
 # This file accesses the data
 
@@ -277,6 +278,53 @@ def head(conn, table, n=6):
     for r in rows:
         print(r)
 
+
+def price_data_with_date_location(conn, latitude, longitude, date, box_height=0.2, 
+                                  box_width=0.2, date_range=90):
+
+  d1 = datetime.datetime.strptime(date, "%Y-%m-%d")
+  d2 = d1 + datetime.timedelta(days = date_range)
+  
+  d1 = date
+  d2 = d2.strftime("%Y-%m-%d")     
+
+  df = pd.DataFrame()
+  with conn.cursor() as cur:
+    cur.execute(f"""
+      select price, date_of_transfer, pp_data.postcode as postcode, property_type,
+        new_build_flag, tenure_type, locality, town_city, district, county, country,
+        latitude, longitude
+      from pp_data 
+      inner join postcode_data
+      on pp_data.postcode = postcode_data.postcode
+      where
+        latitude between {latitude} - {box_height}  and  {latitude} + {box_height} and
+        longitude between {longitude} - {box_width}  and {longitude} + {box_width} and
+        date_of_transfer between '{d1}' and '{d2}'
+    """.replace("\n", " "))
+
+    rows = cur.fetchall()
+
+    df = pd.DataFrame(rows, columns=["price", "date_of_transfer", "postcode" , "property_type",
+      "new_build_flag", "tenure_type", "locality", "town_city", "district", "county", "country",
+      "latitude", "longitude"])
+
+    # df.set_index('db_id', inplace=True)
+
+  return df
+
+def get_osm_pois(latitude, longitude, tags, box_width=0.02, box_height=0.02):
+
+  north = latitude + box_height
+  south = latitude - box_height
+  west = longitude - box_width
+  east = longitude + box_width
+
+  pois = ox.geometries_from_bbox(north, south, east, west, tags)
+
+  return pois
+
+conn = connect_db()
 
 def data():
     """Read the data from the web or local file, 
