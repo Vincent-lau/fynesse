@@ -12,6 +12,7 @@ import datetime
 import pandas as pd
 import zipfile
 import osmnx as ox
+from . import assess
 
 # This file accesses the data
 
@@ -320,7 +321,7 @@ def get_osm_pois(latitude, longitude, box_width=0.02, box_height=0.02):
   west = longitude - box_width
   east = longitude + box_width
 
-  pois = ox.geometries_from_bbox(north, south, east, west, tags)
+  pois = ox.geometries_from_bbox(north, south, east, west, assess.get_tags())
 
   return pois
 

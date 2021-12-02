@@ -150,7 +150,7 @@ def retrieve_houses(conn, latitude, longitude, date, property_type):
 
     # get the prices_coordinate_data
     house_loc = None
-    for i in range(10):
+    for i in range(1, 10):
         house_loc = access.price_data_with_date_location(conn, latitude, longitude, date,
                                                          box_height, box_width, date_range)
 
@@ -185,10 +185,9 @@ def retrieve_houses(conn, latitude, longitude, date, property_type):
 
 def retrieve_pois(latitude, longitude, house_loc):
     # get OSM data
-    tags = address.get_tags()
 
-    init_box_height = 0.01
-    init_box_width = 0.01
+    init_box_height = 0.02
+    init_box_width = 0.02
 
     box_height = init_box_height
     box_width = init_box_width
@@ -197,9 +196,8 @@ def retrieve_pois(latitude, longitude, house_loc):
     print(f"the place we are in is {place_name}")
 
     pois = None
-    for i in range(5):
-        pois = access.get_osm_pois(latitude, longitude, tags,
-                                   place_name, box_width, box_height)
+    for i in range(1, 5):
+        pois = get_osm_pois(latitude, longitude, box_width, box_height)
         if pois.shape[0] > 50:
             break
         else:

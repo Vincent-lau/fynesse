@@ -221,8 +221,6 @@ def draw_test_data(house_loc_test, pois, feature_keys, fig, ax):
 
 
 
-
-
 def predict_price(latitude, longitude, date, property_type, draw=False):
 
   # Retrieve POIs
@@ -337,13 +335,8 @@ def predict_single(results, house_loc_test, pois, longitude, latitude, date,
 
     design_pred = design_matrix(x, i_pred)
 
-    print(results.summary())
-    print(
-        f"the feature of the predict single is {x} and the design matrix is {design_pred}")
-    y_pred_linear_basis = results.get_prediction(
-        design_pred).summary_frame(alpha=0.05)
+    y_pred_linear_basis = results.get_prediction(design_pred).summary_frame(alpha=0.05)
 
-    print(f"prediction is {y_pred_linear_basis['mean']}")
     return y_pred_linear_basis['mean'][0]
 
 
@@ -363,6 +356,9 @@ def validate(results, house_loc_test, pois, feature_keys):
     design_pred = design_matrix(x, i_pred)
 
     y_pred = results.get_prediction(design_pred).summary_frame(alpha=0.05)
+
+    mse = ((y - y_pred) ** 2).mean()
+    print(f"the mean squared error is {mse}")
 
     fig, ax = plt.subplots()
     ax.scatter(y, y_pred['mean'])
