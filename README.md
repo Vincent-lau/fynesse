@@ -1,6 +1,7 @@
 # Fynesse Template
 
-Below I highlight some aspects that I think is worth mentioning for this project.
+In this document I will highlight some aspects that I think is worth mentioning 
+for this project.
 The overall structure follows the fynesse template as described, separating
 access, assess and address of the problem. The high level idea is that access
 sets up the database and uploading and downloading of various data. Assess looks
