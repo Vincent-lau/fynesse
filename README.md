@@ -1,10 +1,11 @@
 # Fynesse Template
 
-This repo provides a template repo for doing data analysis according to the Fynesse framework.
-
-One challenge for data science and data science processes is that they do not always accommodate the real-time and evolving nature of data science advice as required, for example in pandemic response or in managing an international supply chain. The Fynesse paradigm is inspired by experience in operational data science both in the Amazon supply chain and in the UK Covid-19 pandemic response.
-
-The Fynesse paradigm considers three aspects to data analysis, Access, Assess, Address. 
+Below I highlight some aspects that I think is worth mentioning for this project.
+The overall structure follows the fynesse template as described, separating
+access, assess and address of the problem. The high level idea is that access
+sets up the database and uploading and downloading of various data. Assess looks
+at the map and house data and tries to plot them. Finally address fits a model
+on price against features.
 
 ## Access
 

@@ -182,6 +182,8 @@ def create_prices_coordinate_data(conn):
 def connect_db(cred_path = "credentials.yaml", database_details = db_details):
     with open(cred_path) as file:
         credentials = yaml.safe_load(file)
+    global db_details 
+    db_details = database_details
     return create_connection(user=credentials["username"],
                              password=credentials["password"],
                              host=database_details["url"],
@@ -296,9 +298,9 @@ conn = None
 
 def get_conn():
     if conn == None:
-        return connect_db()
-    else:
-        return conn
+        global conn
+        conn = connect_db()
+    return conn
 
 def data():
     latitude = 54.4 
