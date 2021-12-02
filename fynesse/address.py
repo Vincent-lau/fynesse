@@ -294,7 +294,7 @@ def validate(results, house_loc_test, pois, feature_keys):
     y_pred = results.get_prediction(design_pred).summary_frame(alpha=0.05)
 
     err = sklearn.metrics.mean_squared_error(y, y_pred['mean'].values)
-    print(f"the root of mean squared error is {math.sqrt(err)}")
+    print(f"the square root of mean squared error is {math.sqrt(err)}")
 
     fig, ax = plt.subplots()
     ax.scatter(y, y_pred['mean'])
