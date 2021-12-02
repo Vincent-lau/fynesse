@@ -27,7 +27,7 @@ also think about the ethical issues around this data.
 
 
 # Insert your database url below
-database_details = {"url": "database-sl955.cgrre17yxw11.eu-west-2.rds.amazonaws.com",
+db_details = {"url": "database-sl955.cgrre17yxw11.eu-west-2.rds.amazonaws.com",
                     "port": 3306}
 
 
@@ -87,8 +87,7 @@ def create_pp_db(conn):
     conn.commit()
 
 
-def upload_pp_data(conn, start_year, end_year):
-    filepath = 'drive/MyDrive/dataset/'
+def upload_pp_data(conn, start_year, end_year, filepath = 'drive/MyDrive/dataset/'):
 
     for year in range(start_year, end_year):
         for part in range(1, 3):
@@ -180,13 +179,14 @@ def create_prices_coordinate_data(conn):
     print("prices coordinate data created")
 
 
-def connect_db():
-    with open("drive/MyDrive/credentials.yaml") as file:
+def connect_db(cred_path = "credentials.yaml", database_details = db_details):
+    with open(cred_path) as file:
         credentials = yaml.safe_load(file)
     return create_connection(user=credentials["username"],
                              password=credentials["password"],
                              host=database_details["url"],
-                             database="property_prices")
+                             database="property_prices",
+                             port = database_details["port"])
 
 
 def create_connection(user, password, host, database, port=3306):

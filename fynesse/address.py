@@ -158,7 +158,7 @@ def get_features_selected(house_dist_to_places, pois, feature_keys):
     """
     Given facilities we are interested in, select all those from house_dist_to_places
     :param house_dist_to_places: a dictionary mapping amenities to shortest distance
-    :param pois: has all the facilities/amenities that we might need
+    :param feature_keys: the feature that we chose among all tags
     """
 
     res = []
@@ -302,8 +302,8 @@ def validate(results, house_loc_test, pois, feature_keys):
     ax.set_xlim([0, np.max(y)])
     ax.set_ylim([0, np.max(y_pred['mean'])])
     ax.set_title("Actual price against predicted price")
-    ax.set_xlabel('predicted prices')
-    ax.set_ylabel('actual prices')
+    ax.set_xlabel('actual prices')
+    ax.set_ylabel('predicated prices')
 
     # y = x
     x = np.linspace(0, np.max(y), 1000)

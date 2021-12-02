@@ -8,6 +8,10 @@ The Fynesse paradigm considers three aspects to data analysis, Access, Assess, A
 
 ## Access
 
+- what data is obtained, and any legal and ethical issues around that
+
+- 
+
 Gaining access to the data, including overcoming availability challenges (data is distributed across architectures, called from an obscure API, written in log books) as well as legal rights (for example intellectual property rights) and individual privacy rights (such as those provided by the GDPR).
 
 It seems a great challenge to automate all the different aspects of the process of data access, but this challenge is underway already through the process of what is commonly called *digital transformation*. The process of digital transformation takes data away from physical log books and into digital devices. But that transformation process itself comes with challenges. 
