@@ -219,13 +219,12 @@ def draw_test_data(house_loc_test, pois, feature_keys, fig, ax):
 
     plt.show()
 
-conn = access.get_conn()
 
 def predict_price(latitude, longitude, date, property_type, draw=False):
 
 
     # get the prices_coordinate_data
-    house_loc = assess.retrieve_houses(conn, latitude, longitude, date, property_type)
+    house_loc = assess.retrieve_houses(access.get_conn(), latitude, longitude, date, property_type)
 
     # get OSM data
     pois = assess.retrieve_pois(latitude, longitude, house_loc)
@@ -233,7 +232,7 @@ def predict_price(latitude, longitude, date, property_type, draw=False):
     if (draw):
         # draw the date before we fit the model
         place_name = assess.get_place_name(house_loc)
-        assess.draw_location(conn, latitude, longitude, date, place_name)
+        assess.draw_location(access.get_conn(), latitude, longitude, date, place_name)
 
     fig, ax = plt.subplots()
     fig.set_size_inches(13, 10)

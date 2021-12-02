@@ -327,6 +327,7 @@ def get_osm_pois(latitude, longitude, box_width=0.02, box_height=0.02):
   return pois
 
 conn = None
+
 def get_conn():
     if conn == None:
         return connect_db()
