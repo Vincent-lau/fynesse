@@ -301,6 +301,15 @@ def get_conn():
         return conn
 
 def data():
+    latitude = 54.4 
+    longitude = -2.9 
+    box_width = 0.05
+    box_height = 0.05
+
+    date = '2018-04-26'
+    date_range = 90
+
+
     """Read the data from the web or local file, 
     returning structured format such as a data frame"""
-    raise NotImplementedError
+    return price_data_with_date_location(conn, latitude, longitude, date, box_width, box_height, date_range)

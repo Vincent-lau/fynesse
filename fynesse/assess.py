@@ -213,7 +213,8 @@ def data():
     as well as indices correct, column names informative, date and times correctly 
     formatted. Return a structured data structure such as a data frame."""
     df = access.data()
-    raise NotImplementedError
+    # the data is quite clean and don't think need to cleaning at this stage
+    return df
 
 
 def query(data):
@@ -224,9 +225,16 @@ def query(data):
 def view(data):
     """Provide a view of the data that allows the user to verify 
     some aspect of its quality."""
-    raise NotImplementedError
+    place_name = "SOUTH LAKELAND, United Kingdom"
+    latitude = 54.4 
+    longitude = -2.9 
+
+    date = '2018-04-26'
+    draw_location(access.get_conn(), latitude, longitude, date, place_name)
 
 
 def labelled(data):
     """Provide a labelled set of data ready for supervised learning."""
-    raise NotImplementedError
+    # the data returned by data() is itself a labelled data and will be processed
+    # later on by the train function
+    return data()
