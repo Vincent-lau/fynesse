@@ -1,3 +1,4 @@
+from matplotlib.pyplot import connect
 from .config import *
 
 """These are the types of import we might expect in this file
@@ -325,7 +326,12 @@ def get_osm_pois(latitude, longitude, box_width=0.02, box_height=0.02):
 
   return pois
 
-conn = connect_db()
+conn = None
+def get_conn():
+    if conn == None:
+        return connect_db()
+    else:
+        return conn
 
 def data():
     """Read the data from the web or local file, 

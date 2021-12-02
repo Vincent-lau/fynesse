@@ -13,6 +13,7 @@ import tensorflow as tf
 # Or if it's a statistical analysis
 import scipy.stats"""
 
+from abc import get_cache_token
 from matplotlib import pyplot as plt
 import numpy as np
 import geopandas as gpd
@@ -23,7 +24,6 @@ import sklearn.metrics
 import pandas as pd
 from . import access
 from . import assess
-
 
 """Address a particular question that arises from the data"""
 
@@ -219,6 +219,7 @@ def draw_test_data(house_loc_test, pois, feature_keys, fig, ax):
 
     plt.show()
 
+conn = access.get_conn()
 
 def predict_price(latitude, longitude, date, property_type, draw=False):
 
