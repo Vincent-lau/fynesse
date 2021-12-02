@@ -153,7 +153,7 @@ def feature_selection(house_loc, pois, draw=False):
 
 def get_features_selected(house_dist_to_places, pois, feature_keys):
     """
-    Given facilities we are interested, select all those from house_dist_to_places
+    Given facilities we are interested in, select all those from house_dist_to_places
     :param house_dist_to_places: a dictionary mapping amenities to shortest distance
     :param pois: has all the facilities/amenities that we might need
     """
@@ -162,6 +162,8 @@ def get_features_selected(house_dist_to_places, pois, feature_keys):
     for k in feature_keys:
         if k in house_dist_to_places:
             res.append(house_dist_to_places[k])
+        else:
+            assert(False)
     return np.array(res)
 
 

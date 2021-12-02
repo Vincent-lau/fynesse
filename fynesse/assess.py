@@ -50,8 +50,7 @@ def get_place_name(house_loc):
     return house_loc['district'].unique()[0] + ", United Kingdom"
 
 
-def get_osm_pois(latitude, longitude, place_name, box_width=0.02, box_height=0.02):
-    placestub = place_name.lower().replace(' ', '-').replace(',', '')
+def get_osm_pois(latitude, longitude, box_width=0.02, box_height=0.02):
 
     north = latitude + box_height
     south = latitude - box_height
