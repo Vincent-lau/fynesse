@@ -313,7 +313,7 @@ def price_data_with_date_location(conn, latitude, longitude, date, box_height=0.
 
   return df
 
-def get_osm_pois(latitude, longitude, tags, box_width=0.02, box_height=0.02):
+def get_osm_pois(latitude, longitude, box_width=0.02, box_height=0.02):
 
   north = latitude + box_height
   south = latitude - box_height

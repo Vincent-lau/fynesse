@@ -94,6 +94,7 @@ def get_house_dist_to_facilities(house_loc, pois):
     :param pois: This contains all the facility/amenities that we are interested 
     in measuring distances
     """
+
     facility_names = get_all_facility_names(pois)
 
     house_dist_to_places = {fac_name: get_closet_dist_to_facility(house_loc, pois, fac_name)
@@ -218,6 +219,104 @@ def draw_test_data(house_loc_test, pois, feature_keys, fig, ax):
     plt.show()
 
 
+
+
+
+
+def predict_price(latitude, longitude, date, property_type, draw=False):
+
+  # Retrieve POIs
+  tags = assess.get_tags()
+
+  init_box_height = 0.01
+  init_box_width = 0.01
+  init_date_range = 30
+
+  box_height = init_box_height
+  box_width = init_box_width
+  date_range = init_date_range
+
+  # get the prices_coordinate_data
+  house_loc = None
+  for i in range(10):
+    house_loc = access.price_data_with_date_location(conn, latitude, longitude, date, 
+                                            box_height, box_width, date_range)
+
+    retrieved_properties = house_loc['property_type'].unique()
+    if house_loc.shape[0] > 50 and property_type in retrieved_properties:
+      break
+    else:
+      box_height += 0.01 * i
+      box_width += 0.01 * i
+      date_range += 5 * i
+      if (house_loc.shape[0] < 50):
+        print(f"found only {house_loc.shape[0]} number of houses")
+      elif not property_type in retrieved_properties:
+        print(f"have not found property {property_type} from dataset") 
+
+      print(f"increasing bounding box size and date range to \
+            width=height={box_height} date range={date_range}")
+
+  if house_loc.shape[0] < 50:
+    print(f"WARNING too few houses {house_loc.shape[0]} around to train")
+  if not property_type in retrieved_properties:
+    print(f"WARNING did not find property {property_type} from dataset")
+
+  print(f"number of houses found {house_loc.shape[0]} and number of {property_type}\
+  houses in the dataset is {house_loc[house_loc['property_type'] == property_type].shape[0]}") 
+
+  # get OSM data 
+
+  box_height = init_box_height
+  box_width = init_box_width
+  date_range = init_date_range
+
+
+  place_name = assess.get_place_name(house_loc)
+  print(f"the place we are in is {place_name}")
+
+  
+  for i in range(5):
+    pois = assess.get_osm_pois(latitude, longitude, box_width, box_height) 
+    if pois.shape[0] > 50:
+      break
+    else:
+      box_height += 0.01 * i
+      box_width += 0.01 * i
+      print(f"found only {pois.shape[0]} number of pois")
+      print(f"increasing bounding box size to width=height={box_height} to get more pois")
+
+  print(f"finally found {pois.shape[0]} number of pois")
+
+  print(f"Actual types of amenites being retrieved {pois['amenity'].unique()}")
+
+  print("There are {number} points of interest surrounding {placename} latitude: \
+       {latitude}, longitude: {longitude}".format(number=len(pois), placename=place_name, latitude=latitude, longitude=longitude))
+
+  if (draw):
+    # draw the date before we fit the model
+    assess.draw_location(conn, latitude, longitude, date, place_name,
+                  box_width, box_height)
+
+  fig, ax = plt.subplots()
+  fig.set_size_inches(13, 10)
+  # train and validate
+
+  house_loc_train, house_loc_test= ms.train_test_split(house_loc, random_state=0)
+
+  feature_keys = feature_selection(house_loc, pois)
+  results = train(house_loc_train, pois, property_type, feature_keys, fig, ax)
+  draw_test_data(house_loc_test, pois, feature_keys, fig, ax)
+  validate(results, house_loc_test, pois, feature_keys)
+  
+  # get the final prediction
+  r = predict_single(results, house_loc_test, pois, longitude, latitude, date, 
+                    property_type, feature_keys)        
+  return r
+
+
+
+
 def predict_single(results, house_loc_test, pois, longitude, latitude, date,
                    property_type, feature_keys):
 
@@ -251,7 +350,8 @@ def predict_single(results, house_loc_test, pois, longitude, latitude, date,
 def validate(results, house_loc_test, pois, feature_keys):
     print("==========validating on test dataset==============")
 
-    house_dist_to_places = get_house_dist_to_facilities(house_loc_test, pois)
+    house_dist_to_places = get_house_dist_to_facilities(
+        house_loc_test, pois)
 
     x = get_features_selected(house_dist_to_places, pois, feature_keys)
     y = np.array(house_loc_test['price'].values)
@@ -262,18 +362,18 @@ def validate(results, house_loc_test, pois, feature_keys):
 
     design_pred = design_matrix(x, i_pred)
 
-    y_pred_linear_basis = results.get_prediction(
-        design_pred).summary_frame(alpha=0.05)
+    y_pred = results.get_prediction(design_pred).summary_frame(alpha=0.05)
 
     fig, ax = plt.subplots()
-    ax.scatter(y, y_pred_linear_basis['mean'])
+    ax.scatter(y, y_pred['mean'])
 
     ax.set_xlim([0, np.max(y)])
-    ax.set_ylim([0, np.max(y)])
+    ax.set_ylim([0, np.max(y_pred['mean'])])
+    ax.set_title("Actual price against predicted price")
 
     # y = x
     x = np.linspace(0, np.max(y), 1000)
     y = x
     ax.plot(x, y, color='magenta')
 
-    return y_pred_linear_basis['mean']
+    return y_pred['mean']
