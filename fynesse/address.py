@@ -126,7 +126,6 @@ def feature_selection(house_loc, pois, draw=False):
 
     corrs = []
 
-    print(f"fetched facilities are {facility_names}")
     r = int(len(facility_names) / 2)
     if draw:
         fig, ax = plt.subplots(r, 2)
@@ -142,12 +141,14 @@ def feature_selection(house_loc, pois, draw=False):
                 ax[i, j].scatter(x, y)
                 ax[i, j].set_title(facility_names[i * 2 + j])
     corrs = sorted(corrs, key=lambda c: abs(c[0]), reverse=True)
-    print(corrs)
+
     feature_keys = []
     if len(corrs) >= 3:
         feature_keys = [k[1] for k in corrs[:3]]
 
     if draw:
+        print(f"fetched facilities are {facility_names}")
+        print(corrs)
         fig.tight_layout()
         plt.show()
     return feature_keys
@@ -199,7 +200,6 @@ def train(house_loc_train, pois, property_type, feature_keys, fig, ax):
     y_pred_linear_basis = results_basis.get_prediction(
         design_pred).summary_frame(alpha=0.05)
 
-    print(x[0])
     ax.scatter(x[0], y, zorder=2)
 
     ax.plot(x_pred[0], y_pred_linear_basis['mean'], color='red',
