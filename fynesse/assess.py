@@ -50,17 +50,6 @@ def get_place_name(house_loc):
     return house_loc['district'].unique()[0] + ", United Kingdom"
 
 
-def get_osm_pois(latitude, longitude, box_width=0.02, box_height=0.02):
-
-    north = latitude + box_height
-    south = latitude - box_height
-    west = longitude - box_width
-    east = longitude + box_width
-
-    pois = ox.geometries_from_bbox(north, south, east, west, get_tags())
-
-    return pois
-
 
 def draw_location(conn, latitude, longitude, date, place_name,
                   box_width=0.02, box_height=0.02):
@@ -94,7 +83,7 @@ def draw_location(conn, latitude, longitude, date, place_name,
     ax[0].set_xlabel("longitude")
     ax[0].set_ylabel("latitude")
 
-    pois = get_osm_pois(latitude, longitude, place_name, box_width, box_height)
+    pois = access.get_osm_pois(latitude, longitude, place_name, box_width, box_height)
 
     house_loc = access.price_data_with_date_location(conn, latitude, longitude, date,
                                               box_height, box_width, date_range=180)
@@ -197,7 +186,7 @@ def retrieve_pois(latitude, longitude, house_loc):
 
     pois = None
     for i in range(1, 5):
-        pois = get_osm_pois(latitude, longitude, box_width, box_height)
+        pois = access.get_osm_pois(latitude, longitude, box_width, box_height)
         if pois.shape[0] > 50:
             break
         else:

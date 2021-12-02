@@ -281,40 +281,6 @@ def head(conn, table, n=6):
         print(r)
 
 
-def price_data_with_date_location(conn, latitude, longitude, date, box_height=0.2, 
-                                  box_width=0.2, date_range=90):
-
-  d1 = datetime.datetime.strptime(date, "%Y-%m-%d")
-  d2 = d1 + datetime.timedelta(days = date_range)
-  
-  d1 = date
-  d2 = d2.strftime("%Y-%m-%d")     
-
-  df = pd.DataFrame()
-  with conn.cursor() as cur:
-    cur.execute(f"""
-      select price, date_of_transfer, pp_data.postcode as postcode, property_type,
-        new_build_flag, tenure_type, locality, town_city, district, county, country,
-        latitude, longitude
-      from pp_data 
-      inner join postcode_data
-      on pp_data.postcode = postcode_data.postcode
-      where
-        latitude between {latitude} - {box_height}  and  {latitude} + {box_height} and
-        longitude between {longitude} - {box_width}  and {longitude} + {box_width} and
-        date_of_transfer between '{d1}' and '{d2}'
-    """.replace("\n", " "))
-
-    rows = cur.fetchall()
-
-    df = pd.DataFrame(rows, columns=["price", "date_of_transfer", "postcode" , "property_type",
-      "new_build_flag", "tenure_type", "locality", "town_city", "district", "county", "country",
-      "latitude", "longitude"])
-
-    # df.set_index('db_id', inplace=True)
-
-  return df
-
 def get_osm_pois(latitude, longitude, box_width=0.02, box_height=0.02):
 
   north = latitude + box_height
