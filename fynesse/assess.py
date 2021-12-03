@@ -50,7 +50,6 @@ def get_place_name(house_loc):
     return house_loc['district'].unique()[0] + ", United Kingdom"
 
 
-
 def draw_location(conn, latitude, longitude, date, place_name,
                   box_width=0.02, box_height=0.02):
 
@@ -83,9 +82,10 @@ def draw_location(conn, latitude, longitude, date, place_name,
     ax[0].set_xlabel("longitude")
     ax[0].set_ylabel("latitude")
 
-    pois = access.get_osm_pois(latitude, longitude, place_name, box_width, box_height)
+    pois = access.get_osm_pois(
+        latitude, longitude, place_name, box_width, box_height)
 
-    house_loc = access.price_data_with_date_location(conn, latitude, longitude, date,
+    house_loc = price_data_with_date_location(conn, latitude, longitude, date,
                                               box_height, box_width, date_range=180)
     print(f"there are {len(house_loc)} number of houses")
 
@@ -103,7 +103,6 @@ def draw_location(conn, latitude, longitude, date, place_name,
         "T": "v",
         "O": "s"
     }
-
 
     norm = plt.Normalize(min(house_loc['price']), max(house_loc['price']))
 
@@ -125,7 +124,6 @@ def draw_location(conn, latitude, longitude, date, place_name,
     plt.show()
 
 
-
 def retrieve_houses(conn, latitude, longitude, date, property_type):
     # Retrieve POIs
 
@@ -140,8 +138,8 @@ def retrieve_houses(conn, latitude, longitude, date, property_type):
     # get the prices_coordinate_data
     house_loc = None
     for i in range(1, 10):
-        house_loc = access.price_data_with_date_location(conn, latitude, longitude, date,
-                                                         box_height, box_width, date_range)
+        house_loc = price_data_with_date_location(conn, latitude, longitude, date,
+                                                  box_height, box_width, date_range)
 
         retrieved_properties = house_loc['property_type'].unique()
         if house_loc.shape[0] > 50 and property_type in retrieved_properties:
@@ -169,7 +167,6 @@ def retrieve_houses(conn, latitude, longitude, date, property_type):
             {house_loc[house_loc['property_type'] == property_type].shape[0]}")
 
     return house_loc
-
 
 
 def retrieve_pois(latitude, longitude, house_loc):
@@ -217,6 +214,13 @@ def data():
     return df
 
 
+def price_data_with_date_location(conn, latitude, longitude, date, box_height=0.2,
+                                  box_width=0.2, date_range=90):
+    df = access.price_data_with_date_location_acc(conn, latitude, longitude, date,
+                                                  box_height, box_width, date_range)
+    return df.dropna()
+
+
 def query_postcode(postcode):
     conn = access.get_conn()
     with conn.cursor() as cur:
@@ -232,8 +236,8 @@ def view(data):
     """Provide a view of the data that allows the user to verify 
     some aspect of its quality."""
     place_name = "SOUTH LAKELAND, United Kingdom"
-    latitude = 54.4 
-    longitude = -2.9 
+    latitude = 54.4
+    longitude = -2.9
 
     date = '2018-04-26'
     draw_location(access.get_conn(), latitude, longitude, date, place_name)

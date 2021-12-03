@@ -230,7 +230,7 @@ def initialise_db(conn):
     return conn
 
 
-def price_data_with_date_location(conn, latitude, longitude, date, box_height=0.2,
+def price_data_with_date_location_acc(conn, latitude, longitude, date, box_height=0.2,
                                   box_width=0.2, date_range=90):
 
     d1 = datetime.datetime.strptime(date, "%Y-%m-%d")
@@ -270,8 +270,12 @@ def select_top(conn, table,  n):
     :param table: The table to query
     :param n: Number of rows to query
     """
-    with conn.cursor() as cur:
-        cur.execute(f'SELECT * FROM {table} LIMIT {n}')
+    if n == -1:
+        with conn.cursor() as cur:
+            cur.execute(f'SELECT * FROM {table}')
+    else:
+        with conn.cursor() as cur:
+            cur.execute(f'SELECT * FROM {table} LIMIT {n}')
 
     rows = cur.fetchall()
     return rows
@@ -347,4 +351,3 @@ def data():
 
     """Read the data from the web or local file,
     returning structured format such as a data frame"""
-    return price_data_with_date_location(conn, latitude, longitude, date, box_width, box_height, date_range)
