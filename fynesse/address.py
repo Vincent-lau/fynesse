@@ -21,6 +21,7 @@ import math
 import statsmodels.api as sm
 import sklearn.model_selection as ms
 import sklearn.metrics
+from sklearn.decomposition import PCA
 import pandas as pd
 from . import access
 from . import assess
@@ -169,29 +170,41 @@ def get_features_selected(house_dist_to_places, pois, feature_keys):
             assert(False)
     return np.array(res)
 
+def dim_red(x):
+    x_red = np.column_stack(x)
+
+    pca = PCA(n_components=1)
+    x_red = pca.fit_transform(x_red)
+
+    x_red = x_red.reshape(1, -1)[0]
+    return x_red
 
 def train(house_loc_train, pois, property_type, feature_keys, fig, ax):
-    print("====================training=====================")
-    house_dist_to_places = get_house_dist_to_facilities(house_loc_train, pois)
+    """
+    fit a linear model on the training data
+    """
 
+    print("====================training=====================")
+    house_dist_to_places = get_house_dist_to_facilities(
+        house_loc_train, pois)
+
+    # get all the distance features
     x = get_features_selected(house_dist_to_places, pois, feature_keys)
     y = np.array(house_loc_train['price'].values)
 
-    prop_types = ['F', 'D', 'S', 'O', 'T']
+    # one-hot encoding of the property_type
+    prop_types = assess.get_prop_types()
     properties = house_loc_train['property_type']
-
     i = [np.where(properties == k, 1, 0) for k in prop_types]
 
-    # modelling with design matrix and fit the model
+    # combining the two above to get a design matrix
     design = design_matrix(x, i)
 
     m_linear_basis = sm.OLS(y, design)
     results_basis = m_linear_basis.fit()
 
-    x0_pred = np.array(np.linspace(np.min(x[0]), np.max(x[0]), 500))
-    x1_pred = np.array(np.linspace(np.min(x[1]), np.max(x[1]), 500))
-    x2_pred = np.array(np.linspace(np.min(x[2]), np.max(x[2]), 500))
-    x_pred = np.array([x0_pred, x1_pred, x2_pred])
+    x_pred = np.array([np.array(np.linspace(np.min(x[i]), np.max(x[i]), 500))
+                      for i in range(x.shape[0])])
 
     prop_pred = np.array([property_type for _ in range(500)])
 
@@ -200,22 +213,29 @@ def train(house_loc_train, pois, property_type, feature_keys, fig, ax):
     y_pred_linear_basis = results_basis.get_prediction(
         design_pred).summary_frame(alpha=0.05)
 
-    ax.scatter(x[0], y, zorder=2)
+    # now apply some dimensionality reduction 
+    x_red = dim_red(x)
+    x_pred_red = dim_red(x_pred)
 
-    ax.plot(x_pred[0], y_pred_linear_basis['mean'], color='red',
-            zorder=1)
+
+    ax.scatter(x_red, y, zorder=2)
+    ax.set_ylabel("house prices")
+    ax.set_xlabel("shortest distance to one facility to a reduced dimension")
+    ax.set_title("model on training set")
+
+    ax.plot(x_pred_red, y_pred_linear_basis['mean'], color='red',zorder=1)
 
     return results_basis
 
 
 def draw_test_data(house_loc_test, pois, feature_keys, fig, ax):
-    facility_names = get_all_facility_names(pois)
 
     house_dist_to_places = get_house_dist_to_facilities(house_loc_test, pois)
     x = get_features_selected(house_dist_to_places, pois, feature_keys)
+    x_red = dim_red(x)
 
     y = np.array(house_loc_test['price'].values)
-    ax.scatter(x[0], y, zorder=2)
+    ax.scatter(x_red, y, zorder=2)
 
     plt.show()
 
