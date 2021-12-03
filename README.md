@@ -14,6 +14,7 @@ validation of its effectiveness.
 There are three major datasets that are used in this project, here are some attributions.
 
 - Price paid data
+
 Contains HM Land Registry data © Crown copyright and database right 2021.
 This data is licensed under the Open Government Licence v3.0.
 
@@ -22,12 +23,14 @@ Royal Mail and Ordnance Survey permit your use of Address Data in the Price Paid
 for personal and/or non-commercial use
 
 - Postcode data
+
 Free to use for any purpose - attribution required.
 Contains OS data © Crown copyright and database right
 Contains Royal Mail data © Royal Mail copyright and database right
 Source: Office for National Statistics licensed under the Open Government Licence v.3.0
 
 - OSM data
+
 © OpenStreetMap contributors
 [License page](https://www.openstreetmap.org/copyright)
 
@@ -71,3 +74,24 @@ pretty self-explanatory.
 I am sure there are a ton of other useful features that I have never thought about,
 or even some that sound promising but did not have time to look into, such as
 distances to city centre, time from a particular point, etc.
+
+## Thinking about tests
+
+During the time I refactored my code, I find myself spending quite a bit of time
+clicking through each cell in the notebook, testing whether the refactor break
+any existing functionalties. There is merit in automating this process, I believe.
+Stealing ideas from software engineering, regression test can be useful by simply
+asking each function to do a simple task and then each time the codebase changes
+we can see if our functions are still functioning.
+
+Sanity checks can be useful as well, I encountered some negative value prediction
+while I was writing my prediction function and did not notice that until later on
+because I was overwhelmed by the bunch of other outputs. So sanity check can be
+useful for some functions.
+
+"Progression" test may not be useful for the address part as this part is all
+about trying to address a particular question, but might be useful for access
+and assess. For access, we might want to check availability of the data, although
+this can be hard to automate if there is legal/ethical issues. For assess, we
+might want to do some fuzz testing to protect against feature invalid values
+that are going to be included in the dataset.
