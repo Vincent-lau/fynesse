@@ -221,6 +221,10 @@ def price_data_with_date_location(conn, latitude, longitude, date, box_height=0.
     return df.dropna()
 
 
+def data_postcode_cleaned(n):
+    return access.data_postcode(n).dropna()
+
+
 def query_postcode(postcode):
     conn = access.get_conn()
     with conn.cursor() as cur:
