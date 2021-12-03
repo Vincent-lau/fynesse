@@ -315,7 +315,7 @@ def data_postcode(n):
     conn = get_conn()
     rows = select_top(conn, 'postcode_data', n)
 
-    return sql_row_to_df('postcode', rows)
+    return sql_row_to_df('postcode_data', rows)
 
 
 def sql_row_to_df(data_name, rows):
