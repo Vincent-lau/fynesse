@@ -1,4 +1,4 @@
-# Fynesse Template
+# UK House price prediction with fynesse
 
 In this document I will highlight some aspects that I think is worth mentioning 
 for this project.
@@ -10,7 +10,7 @@ on price against features.
 
 ## Access
 
-There are three major datasets used in this project, here are some attributions.
+There are three major datasets that are used in this project, here are some attributions.
 
 The price paid data
 Contains HM Land Registry data © Crown copyright and database right 2021.
@@ -59,4 +59,9 @@ using one-hot encoding. I fitted a Gaussian regression model using `OLS` from
 did the validation by train/test data split and tested using MSE. In `address.py`
 there is the `predict_price()` function which is the top level prediction, and also
 `feature_selection()` which looks at distances to different places and find the
-most correalted ones.
+most correalted ones. There is also `train()` and `validate()` whose name is
+pretty self-explanatory.
+
+I am sure there are a ton of other useful features that I have never thought about,
+or even some that sound promising but did not have time to look into, such as
+distances to city centre, etc.

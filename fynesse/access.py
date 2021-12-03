@@ -22,13 +22,12 @@ Place commands in this file to access the data electronically. Don't remove
 any missing values, or deal with outliers. Make sure you have legalities correct,
 both intellectual property and personal data privacy rights. Beyond the legal side
 also think about the ethical issues around this data.
-
 """
 
 
 # Insert your database url below
 db_details = {"url": "database-sl955.cgrre17yxw11.eu-west-2.rds.amazonaws.com",
-                    "port": 3306}
+              "port": 3306}
 
 
 # RUN ONCE to download dataset
@@ -87,7 +86,7 @@ def create_pp_db(conn):
     conn.commit()
 
 
-def upload_pp_data(conn, start_year, end_year, filepath = 'drive/MyDrive/dataset/'):
+def upload_pp_data(conn, start_year, end_year, filepath='drive/MyDrive/dataset/'):
 
     for year in range(start_year, end_year):
         for part in range(1, 3):
@@ -128,13 +127,13 @@ def create_postcode_data(conn):
             `outcode` varchar(4) COLLATE utf8_bin NOT NULL,
             `incode` varchar(3)  COLLATE utf8_bin NOT NULL,
             `db_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY
-            ) DEFAULT CHARSET=utf8 COLLATE=utf8_bin; 
+            ) DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
         """.replace("\n", " ")
                     )
         cur.execute("""
             CREATE INDEX `po.postcode` USING HASH
                 ON `postcode_data`
-                (postcode); 
+                (postcode);
         """.replace("\n", " "))
 
     conn.commit()
@@ -146,8 +145,8 @@ def upload_postcode_data(conn):
     with conn.cursor() as cur:
         cur.execute(f"""
             LOAD DATA LOCAL INFILE '{filepath}open_postcode_geo/open_postcode_geo.csv' INTO TABLE `postcode_data`
-            FIELDS TERMINATED BY ',' 
-            LINES STARTING BY '' TERMINATED BY '\n'; 
+            FIELDS TERMINATED BY ','
+            LINES STARTING BY '' TERMINATED BY '\n';
         """
                     )
     conn.commit()
@@ -179,16 +178,16 @@ def create_prices_coordinate_data(conn):
     print("prices coordinate data created")
 
 
-def connect_db(cred_path = "credentials.yaml", database_details = db_details):
+def connect_db(cred_path="credentials.yaml", database_details=db_details):
     with open(cred_path) as file:
         credentials = yaml.safe_load(file)
-    global db_details 
+    global db_details
     db_details = database_details
     return create_connection(user=credentials["username"],
                              password=credentials["password"],
                              host=database_details["url"],
                              database="property_prices",
-                             port = database_details["port"])
+                             port=database_details["port"])
 
 
 def create_connection(user, password, host, database, port=3306):
@@ -245,7 +244,7 @@ def price_data_with_date_location(conn, latitude, longitude, date, box_height=0.
       select price, date_of_transfer, pp_data.postcode as postcode, property_type,
         new_build_flag, tenure_type, locality, town_city, district, county, country,
         latitude, longitude
-      from pp_data 
+      from pp_data
       inner join postcode_data
       on pp_data.postcode = postcode_data.postcode
       where
@@ -285,16 +284,18 @@ def head(conn, table, n=6):
 
 def get_osm_pois(latitude, longitude, box_width=0.02, box_height=0.02):
 
-  north = latitude + box_height
-  south = latitude - box_height
-  west = longitude - box_width
-  east = longitude + box_width
+    north = latitude + box_height
+    south = latitude - box_height
+    west = longitude - box_width
+    east = longitude + box_width
 
-  pois = ox.geometries_from_bbox(north, south, east, west, assess.get_tags())
+    pois = ox.geometries_from_bbox(north, south, east, west, assess.get_tags())
 
-  return pois
+    return pois
+
 
 conn = None
+
 
 def get_conn():
     global conn
@@ -302,16 +303,38 @@ def get_conn():
         conn = connect_db()
     return conn
 
+
+def data_pp(n):
+    conn = get_conn()
+    rows = select_top(conn, 'pp_data', n)
+    df = pd.DataFrame(rows, columns=['transaction_unique_identifier', 'price',
+                                     'date_of_transfer', 'postcode', 'property_type', 'new_build_flag', 'tenure_type',
+                                     'primary_addressable_object_name', 'secondary_addressable_object_name', 'street',
+                                     'locality', 'town_city', 'district', 'county', 'ppd_category_type', 'record_status',
+                                     'db_id'])
+    return df
+
+
+def data_postcode(n):
+    conn = get_conn()
+    rows = select_top(conn, 'postcode_data', n)
+    df = pd.DataFrame(rows, columns=['postcode', 'status', 'usertype', 'easting',
+                                     'northing', 'positional_quality_indicator', 'country', 'latitude', 'longitude',
+                                     'postcode_no_space', 'postcode_fixed_width_seven', 'postcode_fixed_width_eight',
+                                     'postcode_area', 'postcode_district', 'postcode_sector', 'outcode', 'incode', 'db_id'])
+
+    return df
+
+
 def data():
-    latitude = 54.4 
-    longitude = -2.9 
+    latitude = 54.4
+    longitude = -2.9
     box_width = 0.05
     box_height = 0.05
 
     date = '2018-04-26'
     date_range = 90
 
-
-    """Read the data from the web or local file, 
+    """Read the data from the web or local file,
     returning structured format such as a data frame"""
     return price_data_with_date_location(conn, latitude, longitude, date, box_width, box_height, date_range)
