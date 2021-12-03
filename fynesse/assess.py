@@ -196,7 +196,7 @@ def retrieve_pois(latitude, longitude, house_loc):
     print(f"finally found {pois.shape[0]} number of pois")
 
     print(
-        f"Actual types of amenities being retrieved {pois['amenity'].unique()}")
+        f"Actual types of amenities being retrieved (might have nan and will be cleaned up later on) {pois['amenity'].unique()}")
 
     print("There are {number} points of interest surrounding {placename} latitude: \
             {latitude}, longitude: {longitude}".format(number=len(pois),
