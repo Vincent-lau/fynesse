@@ -220,7 +220,7 @@ def train(house_loc_train, pois, property_type, feature_keys, fig, ax):
 
     ax.scatter(x_red, y, zorder=2)
     ax.set_ylabel("house prices")
-    ax.set_xlabel("shortest distance to one facility to a reduced dimension")
+    ax.set_xlabel("A reduced dimension (which might be negative)")
     ax.set_title("model on training set")
 
     ax.plot(x_pred_red, y_pred_linear_basis['mean'], color='red',zorder=1)
