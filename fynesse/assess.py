@@ -217,9 +217,15 @@ def data():
     return df
 
 
-def query(data):
-    """Request user input for some aspect of the data."""
-    raise NotImplementedError
+def query_postcode(postcode):
+    conn = access.get_conn()
+    with conn.cursor() as cur:
+        cur.execute(f"""
+            select * from postcode_data
+            where postcode like '{postcode}'
+        """.replace("\n", " "))
+        rows = cur.fetchall()
+    return access.sql_row_to_df('postcode_data', rows)
 
 
 def view(data):

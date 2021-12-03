@@ -1,4 +1,5 @@
 from matplotlib.pyplot import connect
+from pandas.io import sql
 from .config import *
 
 """These are the types of import we might expect in this file
@@ -307,23 +308,32 @@ def get_conn():
 def data_pp(n):
     conn = get_conn()
     rows = select_top(conn, 'pp_data', n)
-    df = pd.DataFrame(rows, columns=['transaction_unique_identifier', 'price',
-                                     'date_of_transfer', 'postcode', 'property_type', 'new_build_flag', 'tenure_type',
-                                     'primary_addressable_object_name', 'secondary_addressable_object_name', 'street',
-                                     'locality', 'town_city', 'district', 'county', 'ppd_category_type', 'record_status',
-                                     'db_id'])
-    return df
+    return sql_row_to_df('pp_data', rows)
 
 
 def data_postcode(n):
     conn = get_conn()
     rows = select_top(conn, 'postcode_data', n)
-    df = pd.DataFrame(rows, columns=['postcode', 'status', 'usertype', 'easting',
-                                     'northing', 'positional_quality_indicator', 'country', 'latitude', 'longitude',
-                                     'postcode_no_space', 'postcode_fixed_width_seven', 'postcode_fixed_width_eight',
-                                     'postcode_area', 'postcode_district', 'postcode_sector', 'outcode', 'incode', 'db_id'])
 
-    return df
+    return sql_row_to_df('postcode', rows)
+
+
+def sql_row_to_df(data_name, rows):
+    if data_name == 'pp_data':
+        return pd.DataFrame(rows, columns=['transaction_unique_identifier', 'price',
+                                           'date_of_transfer', 'postcode', 'property_type', 'new_build_flag', 'tenure_type',
+                                           'primary_addressable_object_name', 'secondary_addressable_object_name', 'street',
+                                           'locality', 'town_city', 'district', 'county', 'ppd_category_type', 'record_status',
+                                           'db_id'])
+
+    elif data_name == 'postcode_data':
+        return pd.DataFrame(rows, columns=['postcode', 'status', 'usertype', 'easting',
+                                           'northing', 'positional_quality_indicator', 'country', 'latitude', 'longitude',
+                                           'postcode_no_space', 'postcode_fixed_width_seven', 'postcode_fixed_width_eight',
+                                           'postcode_area', 'postcode_district', 'postcode_sector', 'outcode', 'incode', 'db_id'])
+
+    else:
+        print("data name not recognised")
 
 
 def data():
